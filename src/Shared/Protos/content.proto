@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package tiktok.content;
+
+option csharp_namespace = "TikTokFeed.Contracts.Grpc.Content";
+
+// Content Service = Video Service + Moderation Service from stage 2.
+// Synchronous calls used by Engagement Service.
+service ContentService {
+  rpc GetVideo       (GetVideoRequest)       returns (VideoProto);
+  rpc GetVideosByUser(GetVideosByUserRequest) returns (VideosProto);
+  rpc CheckVideo     (CheckVideoRequest)     returns (ModerationResultProto);
+}
+
+message GetVideoRequest        { string video_id = 1; }
+message GetVideosByUserRequest { string user_id  = 1; }
+
+message VideoProto {
+  string video_id          = 1;
+  string user_id           = 2;
+  string caption           = 3;
+  bool   is_public         = 4;
+  string moderation_status = 5;
+  string processing_status = 6;
+  string thumbnail_url     = 7;
+  int32  duration          = 8;
+  string resolution        = 9;
+  string upload_timestamp  = 10;
+  string sound_id          = 11;
+}
+
+message VideosProto { repeated VideoProto videos = 1; }
+
+message CheckVideoRequest {
+  string video_id  = 1;
+  string video_url = 2;
+}
+
+message ModerationResultProto {
+  string video_id = 1;
+  string status   = 2;
+  string reason   = 3;
+}
