@@ -22,11 +22,12 @@ message VideoProto {
   bool   is_public         = 4;
   string moderation_status = 5;
   string processing_status = 6;
-  string thumbnail_url     = 7;
-  int32  duration          = 8;
-  string resolution        = 9;
-  string upload_timestamp  = 10;
-  string sound_id          = 11;
+  string video_url         = 7;
+  string thumbnail_url     = 8;
+  int32  duration          = 9;
+  string resolution        = 10;
+  string upload_timestamp  = 11;
+  string sound_id          = 12;
 }
 
 message VideosProto { repeated VideoProto videos = 1; }
