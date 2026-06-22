@@ -10,6 +10,7 @@ using System.Text.Json;
 using TikTokFeed.Contracts.Auth;
 using TikTokFeed.Contracts.Errors;
 using TikTokFeed.Contracts.Json;
+using TikTokFeed.Identity.Api.Grpc;
 using TikTokFeed.Identity.Api.Middleware;
 using TikTokFeed.Identity.Api.Services;
 using TikTokFeed.Identity.Application;
@@ -118,6 +119,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcService<IdentityGrpcService>();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "identity" }));
 
 await app.RunAsync();
