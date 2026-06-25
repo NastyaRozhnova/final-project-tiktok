@@ -4,8 +4,7 @@ package tiktok.identity;
 
 option csharp_namespace = "TikTokFeed.Contracts.Grpc.Identity";
 
-// Identity Service = User Service from stage 2.
-// Synchronous calls used by Engagement Service.
+// Identity Service = User Service
 service IdentityService {
   rpc GetUser       (GetUserRequest)       returns (UserProto);
   rpc ValidateToken (ValidateTokenRequest) returns (TokenValidationProto);

@@ -4,8 +4,7 @@ package tiktok.engagement;
 
 option csharp_namespace = "TikTokFeed.Contracts.Grpc.Engagement";
 
-// Engagement Service = Interaction Service + Feed Service from stage 2.
-// Synchronous calls used by Content Service for honest stats.
+// Engagement Service = Interaction Service + Feed Service
 service EngagementService {
   rpc GetVideoStats       (GetVideoStatsRequest)       returns (VideoStatsProto);
   rpc GetUserInteractions (GetUserInteractionsRequest) returns (InteractionsProto);

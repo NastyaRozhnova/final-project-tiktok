@@ -1,4 +1,3 @@
-# Сборка из корня репозитория: docker build -f src/Content.Api/Dockerfile .
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
