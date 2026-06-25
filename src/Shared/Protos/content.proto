@@ -4,8 +4,7 @@ package tiktok.content;
 
 option csharp_namespace = "TikTokFeed.Contracts.Grpc.Content";
 
-// Content Service = Video Service + Moderation Service from stage 2.
-// Synchronous calls used by Engagement Service.
+// Content Service = Video Service + Moderation Service
 service ContentService {
   rpc GetVideo       (GetVideoRequest)       returns (VideoProto);
   rpc GetVideosByUser(GetVideosByUserRequest) returns (VideosProto);

@@ -18,7 +18,7 @@ using TikTokFeed.Contracts.Auth;
 using TikTokFeed.Contracts.Errors;
 using TikTokFeed.Contracts.Json;
 
-// gRPC по plaintext HTTP/2 (h2c) между контейнерами без TLS.
+// gRPC по plaintext HTTP
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -148,7 +148,7 @@ static async Task EnsureDatabaseAsync(WebApplication app)
     }
 }
 
-/// <summary>Точка входа сервиса (нужна для интеграционных тестов).</summary>
+// Точка входа сервиса
 public partial class Program
 {
     private Program()
