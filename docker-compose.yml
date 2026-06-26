@@ -1,0 +1,124 @@
+# TikTok Feed — полный стек: 3 сервиса + 3 БД + 2 внешних мока
+#
+# Порты хоста (REST / gRPC):
+#   Identity    7080 / 7081     Swagger: http://localhost:7080/swagger
+#   Content     9080 / 9081     Swagger: http://localhost:9080/swagger
+#   Engagement  6080 / 6081     Swagger: http://localhost:6080/swagger
+#   Vision mock 8090            Push mock 8091
+
+x-jwt: &jwt-secret "dev-super-secret-shared-key-change-me-please-32bytes!"
+
+services:
+  # Базы данных 
+  db-identity:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: identity
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  db-content:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: content
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5433:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  db-engagement:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: engagement
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports: ["5434:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Моки внешних зависимостей
+  vision-mock:
+    build:
+      context: .
+      dockerfile: mocks/vision-mock/Dockerfile
+    environment:
+      VISION_DELAY_MS: "0"
+      VISION_FAIL_RATE: "0.0"  
+    ports: ["8090:8090"]
+
+  push-mock:
+    build:
+      context: .
+      dockerfile: mocks/push-mock/Dockerfile
+    environment:
+      PUSH_TIMEOUT_RATE: "0.0"
+    ports: ["8091:8091"]
+
+  # Микросервисы 
+  identity:
+    build:
+      context: .
+      dockerfile: src/Identity.Api/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db-identity;Port=5432;Database=identity;Username=postgres;Password=postgres"
+      JwtSettings__Secret: *jwt-secret
+    depends_on:
+      db-identity:
+        condition: service_healthy
+    ports:
+      - "7080:8080"
+      - "7081:8081"
+
+  content:
+    build:
+      context: .
+      dockerfile: src/Content.Api/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db-content;Port=5432;Database=content;Username=postgres;Password=postgres"
+      JwtSettings__Secret: *jwt-secret
+      ExternalServices__VisionUrl: "http://vision-mock:8090"
+      ExternalServices__PushUrl: "http://push-mock:8091"
+      Grpc__EngagementUrl: "http://engagement:8081"
+    depends_on:
+      db-content:
+        condition: service_healthy
+      vision-mock:
+        condition: service_started
+      push-mock:
+        condition: service_started
+    ports:
+      - "9080:8080"
+      - "9081:8081"
+
+  engagement:
+    build:
+      context: .
+      dockerfile: src/Engagement.Api/Dockerfile
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db-engagement;Port=5432;Database=engagement;Username=postgres;Password=postgres"
+      JwtSettings__Secret: *jwt-secret
+      Grpc__IdentityUrl: "http://identity:8081"
+      Grpc__ContentUrl: "http://content:8081"
+    depends_on:
+      db-engagement:
+        condition: service_healthy
+      identity:
+        condition: service_started
+      content:
+        condition: service_started
+    ports:
+      - "6080:8080"
+      - "6081:8081"
