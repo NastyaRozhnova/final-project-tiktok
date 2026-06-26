@@ -10,10 +10,12 @@ using System.Text.Json;
 using TikTokFeed.Contracts.Auth;
 using TikTokFeed.Contracts.Errors;
 using TikTokFeed.Contracts.Json;
+using TikTokFeed.Engagement.Api.Grpc;
 using TikTokFeed.Engagement.Api.Middleware;
 using TikTokFeed.Engagement.Api.Services;
 using TikTokFeed.Engagement.Application;
 using TikTokFeed.Engagement.Application.Abstractions.Services;
+using TikTokFeed.Engagement.Infrastructure;
 using TikTokFeed.Engagement.Infrastructure.Persistence;
 
 AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -144,7 +146,6 @@ static async Task EnsureDatabaseAsync(WebApplication app)
     }
 }
 
-/// <summary>Точка входа сервиса (нужна для интеграционных тестов).</summary>
 public partial class Program
 {
     private Program()
